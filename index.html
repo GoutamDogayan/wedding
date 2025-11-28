@@ -474,9 +474,10 @@
 
     <div id="petals-container"></div>
 
-    <audio id="bg-music" loop>
+    <audio id="bg-music" autoplay loop>
         <source src="image/aaj.mp3" type="audio/mpeg">
     </audio>
+
     <button class="music-btn music-anim" onclick="toggleMusic()" title="संगीत चलाएं">
         <i class="fas fa-music" id="music-icon"></i>
     </button>
@@ -640,7 +641,7 @@
             <p><i class="fas fa-phone-alt"></i> मो. 9575428618</p>
         </div>
 
-        <p style="margin-top: 30px; font-size: 24px; opacity: 0.7; 
+        <p style="margin-top: 30px; font-size: 18px; opacity: 0.7; 
            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
             Goutam Dogayan |
             <a href="https://www.instagram.com/parth_dogayan?igsh=M2pucnRkcnBiaXQ2" style="color: white;">
@@ -659,8 +660,7 @@
             duration: 800,
         });
 
-        // 2. Countdown Timer Logic (Target: 09 Dec 2025)
-        // Note: Months are 0-indexed in JS (Dec is 11)
+        // 2. Countdown Timer (Target: 09 Dec 2025)
         const weddingDate = new Date(2025, 11, 9, 8, 0, 0).getTime();
 
         const timer = setInterval(function () {
@@ -679,12 +679,13 @@
 
             if (distance < 0) {
                 clearInterval(timer);
-                document.querySelector(".countdown").innerHTML = "<h2 style='color:white'>।। शुभ विवाह संपन्न ।।</h2>";
+                document.querySelector(".countdown").innerHTML =
+                    "<h2 style='color:white'>।। शुभ विवाह संपन्न ।।</h2>";
             }
         }, 1000);
 
         // 3. Audio Player Logic
-        const audio = document.getElementById("bg-music");
+        const audio = document.getElementById("bg-music"); // declared only ONCE
         const musicBtn = document.querySelector(".music-btn");
         const musicIcon = document.getElementById("music-icon");
         let isPlaying = false;
@@ -704,7 +705,31 @@
             isPlaying = !isPlaying;
         }
 
-        // 4. Falling Petals
+        // 4. AUTO-PLAY MUSIC ON PAGE LOAD
+        window.addEventListener("load", function () {
+            setTimeout(() => {
+                audio.play()
+                    .then(() => {
+                        // Auto animation ON
+                        isPlaying = true;
+                        musicIcon.classList.remove("fa-music");
+                        musicIcon.classList.add("fa-pause");
+                        musicBtn.classList.add("music-anim");
+                    })
+                    .catch(() => {
+                        // Autoplay blocked → play on first click
+                        document.body.addEventListener("click", () => {
+                            audio.play();
+                            isPlaying = true;
+                            musicIcon.classList.remove("fa-music");
+                            musicIcon.classList.add("fa-pause");
+                            musicBtn.classList.add("music-anim");
+                        }, { once: true });
+                    });
+            }, 500);
+        });
+
+        // 5. Falling Petals
         function createPetal() {
             const petal = document.createElement('div');
             petal.classList.add('petal');
@@ -716,7 +741,6 @@
             petal.style.width = size + 'px';
             petal.style.height = size + 'px';
 
-            // Colors: Red, Pink, Gold shades
             const colors = ['#b30000', '#ffcccc', '#d4af37', '#fff'];
             petal.style.background = colors[Math.floor(Math.random() * colors.length)];
 
@@ -729,6 +753,8 @@
 
         setInterval(createPetal, 300);
     </script>
+
+
 </body>
 
 </html>
